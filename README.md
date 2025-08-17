@@ -9,7 +9,7 @@ Fitur utama:
 
 ## Cara Pakai
 
-1. Buka `index.html`.
+1. Buka `flssk-generator.html`.
 2. Tempel HTML di textarea.
 3. Klik **Generate**.
 4. Salin kode Flask yang muncul di bawah tombol.
