@@ -3,48 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HTML → Flask Generator</title>
+<title>Generator HTML → Flask</title>
 <style>
-    body { font-family: sans-serif; margin: 0; padding: 10px; background: #f5f5f5; }
-    h2 { text-align: center; color: #333; }
-    textarea, pre { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
-    textarea { min-height: 150px; resize: vertical; }
-    button { background: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-    button:hover { background: #0056b3; }
-    pre { background: #272822; color: #f8f8f2; overflow-x: auto; margin-top: 10px; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #0a1530;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #5eead4;
+  }
+  textarea {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #5eead4;
+    background: #0f1e4d;
+    color: #fff;
+    box-sizing: border-box;
+  }
+  button {
+    background: #5eead4;
+    border: none;
+    color: #000;
+    padding: 10px 16px;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #4dd4be;
+  }
+  pre {
+    background: #0f1e4d;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 </style>
 </head>
 <body>
-    <h2>HTML → Flask Generator</h2>
-    <textarea id="htmlCode" placeholder="Masukkan HTML di sini..."></textarea>
-    <button onclick="generateFlask()">Generate</button>
 
-    <h3>Hasil Flask:</h3>
-    <pre id="flaskCode"></pre>
-    <button onclick="copyCode()">📋 Salin Code</button>
+<h1>Generator HTML → Flask</h1>
 
-    <script>
-    function generateFlask() {
-        const htmlCode = document.getElementById('htmlCode').value;
-        const flaskTemplate = `from flask import Flask
+<textarea id="htmlInput" placeholder="Tempel HTML di sini..."></textarea><br>
+<button onclick="generateFlask()">Generate</button>
+
+<h3>Hasil Kode Flask:</h3>
+<pre id="flaskOutput"></pre>
+<button onclick="copyCode()">Salin Code</button>
+
+<script>
+function generateFlask() {
+  const htmlCode = document.getElementById('htmlInput').value
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$');
+
+  // kode Flask otomatis buka Chrome di Termux
+  const flaskCode = `from flask import Flask
+import webbrowser
+import os
+import time
+from threading import Thread
+
 app = Flask(__name__)
 
 @app.route("/")
-def index():
+def home():
     return """${htmlCode}"""
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)`;
+    def run_flask():
+        app.run(host="127.0.0.1", port=5000)
+    t = Thread(target=run_flask)
+    t.start()
+    time.sleep(2)
+    os.system('am start -a android.intent.action.VIEW -d "http://127.0.0.1:5000" com.android.chrome')
+    t.join()`;
 
-        document.getElementById('flaskCode').innerText = flaskTemplate;
-    }
+  document.getElementById('flaskOutput').textContent = flaskCode;
+}
 
-    function copyCode() {
-        const text = document.getElementById('flaskCode').innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Code berhasil disalin!');
-        });
-    }
-    </script>
+function copyCode() {
+  const code = document.getElementById('flaskOutput').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    alert("Kode berhasil disalin!");
+  }).catch(err => {
+    alert("Gagal menyalin kode: " + err);
+  });
+}
+</script>
+
 </body>
 </html>
